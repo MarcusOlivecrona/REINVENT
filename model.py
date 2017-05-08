@@ -20,7 +20,7 @@ class Logger(object):
         self.terminal.write(message)
         self.log.write(message)
 
-class MolGen(object):
+class REINVENT(object):
     def __init__(self, sess, config):
 
         self.config = config
@@ -457,11 +457,11 @@ if __name__ == "__main__":
               'AGENT_OBJECTIVE' : 'activity_model', #"no_sulfur", "activity_model", "tanimoto"
               }
 
-    print 'MolGen started running...'
+    print 'REINVENT started running...'
     with tf.Session() as sess:
         tf.set_random_seed(8)
         random.seed(8)
-        model = MolGen(sess, model_config)
+        model = REINVENT(sess, model_config)
         #model.pretrain_rnn()
         #model.prior_likelihood("COc1ccccc1N1CCN(CCCCNC(=O)c2ccccc2I)CC1")
         model.sample(10, savepath="gen_mols_before", reuse=None)
