@@ -3,6 +3,7 @@ import random
 import re
 import pickle
 from rdkit import Chem
+import sys
 
 class Vocabulary(object):
     def __init__(self, max_length=140):
@@ -132,7 +133,7 @@ def construct_vocabulary(smiles_list, fname):
     return voc
 
 if __name__ == "__main__":
-    smiles_file = "data/prior_trainingset"
+    smiles_file = sys.argv[1]
     print "Reading smiles..."
     smiles_list = canonicalize_smiles_from_file(smiles_file)
     print "Constructing vocabulary..."
