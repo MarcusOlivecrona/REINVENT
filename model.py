@@ -156,7 +156,7 @@ class REINVENT(object):
                 print '"'*50 + '\n'
                 saver.save(sess, self.save_folder_path + "/saved_model/model.ckpt")
 
-    def sample(self, number_batches, savepath, reuse=None):
+    def sample(self, number_batches, savepath):
         inputs = tf.zeros([self.BATCH_SIZE, 1, self.voc.vocab_size])
         inputs = self._prepend_start_token(inputs)
 
@@ -464,6 +464,6 @@ if __name__ == "__main__":
         model = REINVENT(sess, model_config)
         #model.pretrain_rnn()
         #model.prior_likelihood("COc1ccccc1N1CCN(CCCCNC(=O)c2ccccc2I)CC1")
-        model.sample(10, savepath="gen_mols_before", reuse=None)
+        model.sample(10, savepath="gen_mols_before")
         model.train_agent()
-        model.sample(10, savepath="gen_mols_after", reuse=True)
+        model.sample(10, savepath="gen_mols_after")
