@@ -36,7 +36,7 @@ def tanimoto(smiles):
     tversky_similarity = np.array([DataStructs.TverskySimilarity(fragment_fp, fp, 1, 1) for fp in fps])
     tversky_similarity = np.minimum(tversky_similarity, k)
     tversky_similarity = [-1 + 2 * x / k for x in tversky_similarity]
-    score = np.full(len(smiles), 0, dtype=np.float32)
+    score = np.full(len(smiles), -1, dtype=np.float32)
 
     for idx, value in zip(valid_idxs, tversky_similarity):
         score[idx] =  value
@@ -67,7 +67,7 @@ def activity_model(clf):
         activity_score = clf.predict_proba(fps)[:, 1]    
         activity_score = -1 + 2 * activity_score
 
-        score = np.full(len(smiles), 0, dtype=np.float32)
+        score = np.full(len(smiles), -1, dtype=np.float32)
 
         for idx, value in zip(valid_idxs, activity_score):
             score[idx] =  value
