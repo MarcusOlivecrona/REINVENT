@@ -43,7 +43,7 @@ def tanimoto(smiles):
     return np.array(score, dtype=np.float32)
 
 def restore_activity_model():
-    with open("/home/klnv781/MolGen/ClassifierDRD2/clf.pkl", "r") as f:
+    with open("data/clf.pkl", "r") as f:
         clf = pickle.load(f)
     return clf
 
