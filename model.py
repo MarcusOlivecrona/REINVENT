@@ -266,6 +266,10 @@ class REINVENT(object):
         local_saver.restore(sess, self.model_checkpoint)
         #########################################################################
 
+        if self.config['PLOT_TRAINING']:
+            from dynamic_plot import DynamicPlot
+            dynamic_plotter = DynamicPlot(self.NUM_STEPS)
+
         for step in range(self.NUM_STEPS):
             start_time = time.time()
             score_, gen_smiles_, agent_likelihood_, prior_likelihood_, \
@@ -280,9 +284,11 @@ class REINVENT(object):
 
             finish_time = time.time()
             print "\n\nStep {} out of {} generated smiles:\n".format(step, self.NUM_STEPS)
+            smiles = []
             for i, mol in enumerate(gen_smiles_):
                 if i<10:
                     print self.voc.decode(mol)    
+                    smiles.append(self.voc.decode(mol))
             print '\n'
             print "Total minibatch score: {:.2f}  Loss {:3.2f}  Time taken: {:.2f} seconds".format(
                                                       np.sum(score_), loss_, finish_time - start_time)
@@ -293,6 +299,10 @@ class REINVENT(object):
                                                                             prior_likelihood_[i], 
                                                                             augmented_likelihood_[i], 
                                                                             score_[i])
+
+            if self.config['PLOT_TRAINING']:
+                dynamic_plotter.update((step, np.mean(score_)), smiles) 
+
         print "Saving model..."
         local_saver = tf.train.Saver([var for var in tf.trainable_variables() if "g_" in var.name])
         local_saver.save(sess, self.save_folder_path + "/saved_model/model.ckpt")
@@ -444,26 +454,32 @@ if __name__ == "__main__":
 
     model_config = {
               'LEARNING_RATE' : 0.0005,
-              'NUM_STEPS' : 100,
+              'NUM_STEPS' : 600,
               'NUM_EPOCHS' : 5,
               'BATCH_SIZE': 128,
               'MAX_LENGTH' : 140,
-              'MODEL_CHECKPOINT_PATH' : 'saved_models/canonical_prior/model.ckpt',
+              'MODEL_CHECKPOINT_PATH' : 'saved_models/reduced_prior_celecoxib/saved_model/model.ckpt',
               'MOL_DATA_PATH' : 'data/prior_trainingset_MolData',
               'VOCABULARY_PATH' : 'data/prior_trainingset_Voc',
               'SAVE_FOLDER_PATH' : 'saved_runs/' + 'run_' + time.strftime(
                                      "%Y_%m_%d_%H:%M:%S", time.localtime()),
-              'sigma' : 3,
-              'AGENT_OBJECTIVE' : 'activity_model', #"no_sulfur", "activity_model", "tanimoto"
+              'sigma' : 15,
+              'AGENT_OBJECTIVE' : 'tanimoto', #"no_sulfur", "activity_model", "tanimoto"
+              'PLOT_TRAINING' : True,
               }
 
+    if os.uname()[1] == 'semldx00164.seml.astrazeneca.net':
+        config = tf.ConfigProto(gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.45))
+    else:
+        config = tf.ConfigProto()
+
     print 'REINVENT started running...'
-    with tf.Session() as sess:
+    with tf.Session(config=config) as sess:
         tf.set_random_seed(8)
         random.seed(8)
         model = REINVENT(sess, model_config)
         #model.pretrain_rnn()
         #model.prior_likelihood("COc1ccccc1N1CCN(CCCCNC(=O)c2ccccc2I)CC1")
-        model.sample(10, savepath="gen_mols_before")
+        #model.sample(10, savepath="gen_mols_before")
         model.train_agent()
         model.sample(10, savepath="gen_mols_after")
