@@ -468,10 +468,6 @@ if __name__ == "__main__":
               'PLOT_TRAINING' : True,
               }
 
-    if os.uname()[1] == 'semldx00164.seml.astrazeneca.net':
-        config = tf.ConfigProto(gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.45))
-    else:
-        config = tf.ConfigProto()
 
     print 'REINVENT started running...'
     with tf.Session(config=config) as sess:
