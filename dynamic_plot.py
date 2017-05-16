@@ -1,6 +1,3 @@
-from matplotlib.offsetbox import OffsetImage, AnnotationBbox, TextArea
-import numpy as np
-import time
 import matplotlib
 from matplotlib import pyplot as plt
 from rdkit import Chem
