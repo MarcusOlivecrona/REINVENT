@@ -468,9 +468,9 @@ if __name__ == "__main__":
               'PLOT_TRAINING' : True,
               }
 
-
+    
     print 'REINVENT started running...'
-    with tf.Session(config=config) as sess:
+    with tf.Session() as sess:
         tf.set_random_seed(8)
         random.seed(8)
         model = REINVENT(sess, model_config)
