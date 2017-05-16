@@ -33,7 +33,8 @@ def tanimoto(smiles):
     query_mol = Chem.MolFromSmiles("Cc1ccc(cc1)c2cc(nn2c3ccc(cc3)S(=O)(=O)N)C(F)(F)F")
     query_fp = AllChem.GetMorganFingerprint(query_mol, 2, useCounts=False, useFeatures=True)
 
-    tversky_similarity = np.array([DataStructs.TverskySimilarity(fragment_fp, fp, 1, 1) for fp in fps])
+    k = 0.7
+    tversky_similarity = np.array([DataStructs.TverskySimilarity(query_fp, fp, 1, 1) for fp in fps])
     tversky_similarity = np.minimum(tversky_similarity, k)
     tversky_similarity = [-1 + 2 * x / k for x in tversky_similarity]
     score = np.full(len(smiles), -1, dtype=np.float32)
