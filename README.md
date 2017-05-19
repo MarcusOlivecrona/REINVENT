@@ -22,7 +22,7 @@ To use with a custom SMILES file:
 * The Prior will be saved in the folder specified.
 * Run the model.py train_agent method to train agent, and the model.py sample method (after, or both before and after for comparison) to generate samples
 
-The datasets and pretrained Priors used in the paper can be found under "Releases"
+The datasets and pretrained Priors used in the paper can be found under "Releases > 'saved_models.tar.gz'"
 
 ## To Do
 
