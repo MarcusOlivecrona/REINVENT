@@ -23,49 +23,42 @@ def no_sulphur(smiles):
         score[idx] =  value
     return np.array(score, dtype=np.float32)
 
-def tanimoto(smiles):
-    mols = [Chem.MolFromSmiles(smile) for smile in smiles]
-    valid = [1 if mol!=None else 0 for mol in mols]
-    valid_idxs = [idx for idx, boolean in enumerate(valid) if boolean==1]
-    valid_mols = [mols[idx] for idx in valid_idxs]
+class tanimoto(object):
+    def __init__(self, k=0.7):
+        self.k = k
+        query_mol = Chem.MolFromSmiles("Cc1ccc(cc1)c2cc(nn2c3ccc(cc3)S(=O)(=O)N)C(F)(F)F")
+        self.query_fp = AllChem.GetMorganFingerprint(query_mol, 2, useCounts=False, useFeatures=True)
 
-    fps = [AllChem.GetMorganFingerprint(mol, 2, useCounts=False, useFeatures=True) for mol in valid_mols]
-    query_mol = Chem.MolFromSmiles("Cc1ccc(cc1)c2cc(nn2c3ccc(cc3)S(=O)(=O)N)C(F)(F)F")
-    query_fp = AllChem.GetMorganFingerprint(query_mol, 2, useCounts=False, useFeatures=True)
-
-    k = 0.7
-    tversky_similarity = np.array([DataStructs.TverskySimilarity(query_fp, fp, 1, 1) for fp in fps])
-    tversky_similarity = np.minimum(tversky_similarity, k)
-    tversky_similarity = [-1 + 2 * x / k for x in tversky_similarity]
-    score = np.full(len(smiles), -1, dtype=np.float32)
-
-    for idx, value in zip(valid_idxs, tversky_similarity):
-        score[idx] =  value
-    return np.array(score, dtype=np.float32)
-
-def restore_activity_model():
-    with open("data/clf.pkl", "r") as f:
-        clf = pickle.load(f)
-    return clf
-
-def fingerprints_from_mols(mols):
-        fps = [AllChem.GetMorganFingerprintAsBitVect(mol, 3) for mol in mols] 
-        np_fps = []
-        for fp in fps:
-            arr = np.zeros((1,))
-            DataStructs.ConvertToNumpyArray(fp, arr)
-            np_fps.append(arr)
-        return np_fps
-
-def activity_model(clf):
-    def classifier(smiles):
+    def __call__(self, smiles):
         mols = [Chem.MolFromSmiles(smile) for smile in smiles]
         valid = [1 if mol!=None else 0 for mol in mols]
         valid_idxs = [idx for idx, boolean in enumerate(valid) if boolean==1]
         valid_mols = [mols[idx] for idx in valid_idxs]
 
-        fps = fingerprints_from_mols(valid_mols)
-        activity_score = clf.predict_proba(fps)[:, 1]    
+        fps = [AllChem.GetMorganFingerprint(mol, 2, useCounts=False, useFeatures=True) for mol in valid_mols]
+
+        tversky_similarity = np.array([DataStructs.TverskySimilarity(self.query_fp, fp, 1, 1) for fp in fps])
+        tversky_similarity = np.minimum(tversky_similarity, self.k)
+        tversky_similarity = [-1 + 2 * x / self.k for x in tversky_similarity]
+        score = np.full(len(smiles), -1, dtype=np.float32)
+
+        for idx, value in zip(valid_idxs, tversky_similarity):
+            score[idx] =  value
+        return np.array(score, dtype=np.float32)
+
+class activity_model(object):
+    def __init__(self):
+        with open("data/clf.pkl", "r") as f:
+            self.clf = pickle.load(f)
+            
+    def __call__(self, smiles):
+        mols = [Chem.MolFromSmiles(smile) for smile in smiles]
+        valid = [1 if mol!=None else 0 for mol in mols]
+        valid_idxs = [idx for idx, boolean in enumerate(valid) if boolean==1]
+        valid_mols = [mols[idx] for idx in valid_idxs]
+
+        fps = activity_model.fingerprints_from_mols(valid_mols)
+        activity_score = self.clf.predict_proba(fps)[:, 1]    
         activity_score = -1 + 2 * activity_score
 
         score = np.full(len(smiles), -1, dtype=np.float32)
@@ -73,5 +66,32 @@ def activity_model(clf):
         for idx, value in zip(valid_idxs, activity_score):
             score[idx] =  value
         return np.array(score, dtype=np.float32)
-    return classifier
+
+    @classmethod
+    def fingerprints_from_mols(cls, mols):
+            fps = [AllChem.GetMorganFingerprintAsBitVect(mol, 3) for mol in mols] 
+            np_fps = []
+            for fp in fps:
+                arr = np.zeros((1,))
+                DataStructs.ConvertToNumpyArray(fp, arr)
+                np_fps.append(arr)
+            return np_fps
+
+def get_scoring_function(name, kwargs):
+    scoring_functions = [no_sulphur, tanimoto, activity_model]
+    try:
+        scoring_function = [f for f in scoring_functions if f.__name__ == name][0]
+        return scoring_function(**kwargs)
+    except IndexError:
+        print "Scoring function must be one of {}".format([f.__name__ for f in scoring_functions])
+
+if __name__ == "__main__":
+    print activity_model.__name__
+    print no_sulphur.__name__
+    sf = get_scoring_function("activity_model")
+    print sf.__name__
+    sf = get_scoring_function("actvity_model")
+
+
+
 

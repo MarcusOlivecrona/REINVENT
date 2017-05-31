@@ -6,9 +6,10 @@ import pickle
 import time
 import os, sys
 import random
+from rdkit import Chem
 
 from data_structs import MolData, Vocabulary, tokenize
-import scoring_functions
+from scoring_functions import get_scoring_function
 
 class Logger(object):
     """Class for printing to stdout as well as writing to a log file"""
@@ -24,17 +25,10 @@ class REINVENT(object):
     def __init__(self, sess, config):
 
         self.config = config
+        self.sess = sess
         self.LEARNING_RATE = self.config['LEARNING_RATE']
         self.BATCH_SIZE = self.config['BATCH_SIZE']
         self.NUM_STEPS = self.config['NUM_STEPS']
-
-        #For Prior
-        self.NUM_EPOCHS = self.config['NUM_EPOCHS']
-
-        #For Agent
-        self.objective = self.config['AGENT_OBJECTIVE']
-        self.sigma = self.config['sigma']
-        self.sess = sess
 
         with open(self.config['VOCABULARY_PATH'], 'rb') as f:
 		self.voc = pickle.load(f)
@@ -107,7 +101,11 @@ class REINVENT(object):
         
         print 'Pretraining started...'
 
-        for epoch in range(self.NUM_EPOCHS):
+        if self.config['PLOT_TRAINING']:
+            from dynamic_plot import DynamicPlot
+            dynamic_plotter = DynamicPlot(self.NUM_STEPS)
+
+        for epoch in range(self.config['NUM_EPOCHS']):
         #Epoch used loosely here to refer to NUM_STEPS steps. An actual epoch is a lot more!
                 epoch_start_time = time.time()
                 for step in range(self.NUM_STEPS):
@@ -135,13 +133,18 @@ class REINVENT(object):
                 print '\n' + '"'*50
                 print 'Examples of training SMILES'
                 print '"'*50
+                smiles = []
                 for mol in real_examples[:5]:
                     print self.voc.decode(mol)
+                    smiles.append(self.voc.decode(mol))
                 print '"'*50 + '\n'
 
 	        print '\n' + '"'*50
 	        print 'Examples of generated SMILES'
 	        print '"'*50
+
+                if self.config['PLOT_TRAINING']:
+                    dynamic_plotter.update((step, np.full(128, loss)), smiles) 
 
                 epoch_time_taken = time.time() - epoch_start_time
                 with open(self.save_folder_path + '/gen_smiles', 'a') as f:
@@ -154,7 +157,7 @@ class REINVENT(object):
                             print self.voc.decode(mol)
 
                 print '"'*50 + '\n'
-                saver.save(sess, self.save_folder_path + "/saved_model/model.ckpt")
+                saver.save(self.sess, self.save_folder_path + "/saved_model/model.ckpt")
 
     def sample(self, number_batches, savepath):
         inputs = tf.zeros([self.BATCH_SIZE, 1, self.voc.vocab_size])
@@ -165,7 +168,7 @@ class REINVENT(object):
             try:
                 gen_smiles, _ = self._rnn(inputs, sample=True)
                 saver = tf.train.Saver()   
-                saver.restore(sess, self.model_checkpoint)
+                saver.restore(self.sess, self.model_checkpoint)
             except ValueError:
                 scope.reuse_variables()
                 gen_smiles, _ = self._rnn(inputs, sample=True)
@@ -180,7 +183,8 @@ class REINVENT(object):
                 for i, mol in enumerate(gen_smiles_):
                     f.write(self.voc.decode(mol) + '\n')    
 
-    def prior_likelihood(self, smiles):
+    def prior_likelihood(self, smiles, useRDKit=True):
+        smiles = Chem.MolToSmiles(Chem.MolFromSmiles(smiles))
         smiles = tokenize(smiles)
         seq_len = len(smiles) 
         target = self.voc.encode(smiles, seq_len=seq_len)
@@ -192,7 +196,7 @@ class REINVENT(object):
             try:
                 prior_likelihood, logits = self._prior_likelihood(target)
                 saver = tf.train.Saver()   
-                saver.restore(sess, self.model_checkpoint)
+                saver.restore(self.sess, self.model_checkpoint)
             except ValueError:
                 scope.reuse_variables()
                 prior_likelihood, logits = self._prior_likelihood(target)
@@ -212,15 +216,8 @@ class REINVENT(object):
         print "Prior probability of {}: {:.2f}".format(smiles, prior_likelihood_[0])
 
     def train_agent(self):            
-
-        if self.objective == "no_sulphur":
-            scoring_function = scoring_functions.no_sulphur
-        elif self.objective == "tanimoto":
-            scoring_function = scoring_functions.tanimoto
-        elif self.objective == "activity_model":
-            #The model takes time to load, so do it just once rather than on every call
-            self.activity_model = scoring_functions.restore_activity_model()
-            scoring_function = scoring_functions.activity_model(self.activity_model)
+        scoring_function = get_scoring_function(self.config['AGENT_OBJECTIVE'],
+                                                self.config['AGENT_OBJECTIVE_KWARGS'])
 
         inputs = tf.zeros([self.BATCH_SIZE, 1, self.voc.vocab_size])
         inputs = self._prepend_start_token(inputs)
@@ -230,7 +227,7 @@ class REINVENT(object):
             try:
                 gen_smiles, agent_likelihood = self._rnn(inputs, sample=True)
                 saver = tf.train.Saver()   
-                saver.restore(sess, self.model_checkpoint)
+                saver.restore(self.sess, self.model_checkpoint)
             except ValueError:
                 scope.reuse_variables()
                 gen_smiles, agent_likelihood = self._rnn(inputs, sample=True)
@@ -239,7 +236,7 @@ class REINVENT(object):
             prior_likelihood, _ = self._prior_likelihood(gen_smiles)
 
         score = self._score(gen_smiles, scoring_function)
-        augmented_likelihood = prior_likelihood +  score * self.sigma
+        augmented_likelihood = prior_likelihood + score * self.config['SIGMA']
         reward = -tf.square(augmented_likelihood - agent_likelihood) 
         loss = tf.reduce_mean(-reward)
 
@@ -247,11 +244,11 @@ class REINVENT(object):
         temp = set(tf.global_variables())
         t_vars = tf.trainable_variables()
         self.g_vars = [var for var in t_vars if 'g_' in var.name]
-	optimizer = tf.train.GradientDescentOptimizer(learning_rate=self.LEARNING_RATE)
+	optimizer = tf.train.AdamOptimizer(learning_rate=self.LEARNING_RATE)
 	gvs = optimizer.compute_gradients(loss, var_list=self.g_vars)
 	capped_gvs = [(tf.clip_by_value(grad, -3., 3), var) for grad, var in gvs]
 	train_op = optimizer.apply_gradients(capped_gvs)
-        sess.run(tf.variables_initializer(set(tf.global_variables()) - temp))     
+        self.sess.run(tf.variables_initializer(set(tf.global_variables()) - temp))     
         ##########################################################################
 
         ############## Restore parameters from saved model #######################
@@ -263,7 +260,7 @@ class REINVENT(object):
                 if p_var.name.replace("p_", "g_")==g_var.name:
                     prior_variables_name_mapping[g_var.name.rstrip(":0")] = p_var
         local_saver = tf.train.Saver(prior_variables_name_mapping)
-        local_saver.restore(sess, self.model_checkpoint)
+        local_saver.restore(self.sess, self.model_checkpoint)
         #########################################################################
 
         if self.config['PLOT_TRAINING']:
@@ -290,8 +287,13 @@ class REINVENT(object):
                     print self.voc.decode(mol)    
                     smiles.append(self.voc.decode(mol))
             print '\n'
-            print "Total minibatch score: {:.2f}  Loss {:3.2f}  Time taken: {:.2f} seconds".format(
-                                                      np.sum(score_), loss_, finish_time - start_time)
+            print "Total minibatch score: {:5.2f}  Loss {:3.2f}  Time taken: {:.2f} seconds".format(
+                                                      np.sum(score_), np.max(score_), loss_, finish_time - start_time)
+            print '\n'
+            print "Highest score: {:.2f}   Prior/Agent change: {:3.2f}  Prior/Agent batch change: {:3.2f}".format(
+                                                      np.max(score_),
+                                                      agent_likelihood_[np.argmax(score_)] - prior_likelihood_[np.argmax(score_)],
+                                                      np.sum(np.abs(agent_likelihood_ - prior_likelihood_)))
             print '\n'
             for i in range(10):
                 print "Agent: {:4.2f} Prior: {:4.2f} Target: {:4.2f} Reward: {:4.2f}".format(
@@ -301,11 +303,11 @@ class REINVENT(object):
                                                                             score_[i])
 
             if self.config['PLOT_TRAINING']:
-                dynamic_plotter.update((step, np.mean(score_)), smiles) 
+                dynamic_plotter.update((step, score_), smiles) 
 
         print "Saving model..."
         local_saver = tf.train.Saver([var for var in tf.trainable_variables() if "g_" in var.name])
-        local_saver.save(sess, self.save_folder_path + "/saved_model/model.ckpt")
+        local_saver.save(self.sess, self.save_folder_path + "/saved_model/model.ckpt")
 
     def _rnn(self, inputs, init_cell_state=None, sequence_lengths=None, sample=True): 
 
@@ -454,7 +456,7 @@ if __name__ == "__main__":
 
     model_config = {
               'LEARNING_RATE' : 0.0005,
-              'NUM_STEPS' : 600,
+              'NUM_STEPS' : 1000,
               'NUM_EPOCHS' : 5,
               'BATCH_SIZE': 128,
               'MAX_LENGTH' : 140,
@@ -462,20 +464,21 @@ if __name__ == "__main__":
               'MOL_DATA_PATH' : 'data/prior_trainingset_MolData',
               'VOCABULARY_PATH' : 'data/prior_trainingset_Voc',
               'SAVE_FOLDER_PATH' : 'saved_runs/' + 'run_' + time.strftime(
-                                     "%Y_%m_%d_%H:%M:%S", time.localtime()),
-              'sigma' : 15,
+                                     "%Y-%m-%d-%H_%M_%S", time.localtime()),
+              'SIGMA' : 15,
               'AGENT_OBJECTIVE' : 'tanimoto', #"no_sulfur", "activity_model", "tanimoto"
+              'AGENT_OBJECTIVE_KWARGS' : {"k" : 0.7},
               'PLOT_TRAINING' : True,
               }
 
     
     print 'REINVENT started running...'
-    with tf.Session() as sess:
+    with tf.Session(config=config) as sess:
         tf.set_random_seed(8)
         random.seed(8)
         model = REINVENT(sess, model_config)
         #model.pretrain_rnn()
-        #model.prior_likelihood("COc1ccccc1N1CCN(CCCCNC(=O)c2ccccc2I)CC1")
+        #model.prior_likelihood("CC(C)(C)OC(=O)N1CC(C1)n2cc(cn2)c3cc(nc4c3C(=O)NC4)N5CCC(C5)N")
         #model.sample(10, savepath="gen_mols_before")
         model.train_agent()
         model.sample(10, savepath="gen_mols_after")
