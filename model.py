@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from __future__ import division
+from __future__ import division, print_function
 import numpy as np
 import tensorflow as tf
 import pickle
@@ -99,7 +99,7 @@ class REINVENT(object):
         #Ensure the voc used to construct train data and decode to smiles are the same
         self.train_data.voc = self.voc
         
-        print 'Pretraining started...'
+        print('Pretraining started...')
 
         if self.config['PLOT_TRAINING']:
             from dynamic_plot import DynamicPlot
@@ -119,7 +119,7 @@ class REINVENT(object):
                     step_start_time = time.time()
                     loss, _ = self.sess.run(fetches=fetches, feed_dict=feed_dict)
 
-                    print 'Loss: ' + str(round(loss, 5))
+                    print('Loss: ' + str(round(loss, 5)))
 
                     step_time_taken = time.time() - step_start_time
 
@@ -130,18 +130,18 @@ class REINVENT(object):
                 self.LEARNING_RATE *= 0.98
                 gen_smiles_ = self.sess.run(fetches=gen_smiles)
 
-                print '\n' + '"'*50
-                print 'Examples of training SMILES'
-                print '"'*50
+                print('\n' + '"'*50)
+                print('Examples of training SMILES')
+                print('"'*50)
                 smiles = []
                 for mol in real_examples[:5]:
-                    print self.voc.decode(mol)
+                    print(self.voc.decode(mol))
                     smiles.append(self.voc.decode(mol))
-                print '"'*50 + '\n'
+                print('"'*50 + '\n')
 
-	        print '\n' + '"'*50
-	        print 'Examples of generated SMILES'
-	        print '"'*50
+	        print('\n' + '"'*50)
+	        print('Examples of generated SMILES')
+	        print('"'*50)
 
                 if self.config['PLOT_TRAINING']:
                     dynamic_plotter.update((step, np.full(128, loss)), smiles) 
@@ -154,9 +154,9 @@ class REINVENT(object):
 		    for i, mol in enumerate(gen_smiles_):
                         f.write(self.voc.decode(mol) + '\n')    
 			if i<5:  
-                            print self.voc.decode(mol)
+                            print(self.voc.decode(mol))
 
-                print '"'*50 + '\n'
+                print('"'*50 + '\n')
                 saver.save(self.sess, self.save_folder_path + "/saved_model/model.ckpt")
 
     def sample(self, number_batches, savepath):
@@ -176,7 +176,7 @@ class REINVENT(object):
         with open(self.save_folder_path + '/' + savepath, 'wb') as f:
                     f.write('Generated smiles:\n\n')
 
-        print "Sampling from model..."
+        print("Sampling from model...")
         for i in range(number_batches):
             gen_smiles_ = self.sess.run(fetches=gen_smiles)
             with open(self.save_folder_path + '/' + savepath, 'a') as f:
@@ -210,10 +210,10 @@ class REINVENT(object):
 
         for i in range(np.shape(logits_)[1]):
             for j, char in enumerate(chars):
-                print "Step {:3d} Character {:2d} probability {:.3f}".format(
-                                    i, j, logits_[0, i, self.voc.vocab[char]])
+                print("Step {:3d} Character {:2d} probability {:.3f}".format(
+                                    i, j, logits_[0, i, self.voc.vocab[char]]))
 
-        print "Prior probability of {}: {:.2f}".format(smiles, prior_likelihood_[0])
+        print("Prior probability of {}: {:.2f}".format(smiles, prior_likelihood_[0]))
 
     def train_agent(self):            
         scoring_function = get_scoring_function(self.config['AGENT_OBJECTIVE'],
@@ -280,32 +280,32 @@ class REINVENT(object):
                                                                             train_op])
 
             finish_time = time.time()
-            print "\n\nStep {} out of {} generated smiles:\n".format(step, self.NUM_STEPS)
+            print("\n\nStep {} out of {} generated smiles:\n".format(step, self.NUM_STEPS))
             smiles = []
             for i, mol in enumerate(gen_smiles_):
                 if i<10:
-                    print self.voc.decode(mol)    
+                    print(self.voc.decode(mol))
                     smiles.append(self.voc.decode(mol))
-            print '\n'
-            print "Total minibatch score: {:5.2f}  Loss {:3.2f}  Time taken: {:.2f} seconds".format(
-                                                      np.sum(score_), np.max(score_), loss_, finish_time - start_time)
-            print '\n'
-            print "Highest score: {:.2f}   Prior/Agent change: {:3.2f}  Prior/Agent batch change: {:3.2f}".format(
+            print('\n')
+            print("Total minibatch score: {:5.2f}  Loss {:3.2f}  Time taken: {:.2f} seconds".format(
+                                                      np.sum(score_), np.max(score_), loss_, finish_time - start_time))
+            print('\n')
+            print("Highest score: {:.2f}   Prior/Agent change: {:3.2f}  Prior/Agent batch change: {:3.2f}".format(
                                                       np.max(score_),
                                                       agent_likelihood_[np.argmax(score_)] - prior_likelihood_[np.argmax(score_)],
-                                                      np.sum(np.abs(agent_likelihood_ - prior_likelihood_)))
-            print '\n'
+                                                      np.sum(np.abs(agent_likelihood_ - prior_likelihood_))))
+            print('\n')
             for i in range(10):
-                print "Agent: {:4.2f} Prior: {:4.2f} Target: {:4.2f} Reward: {:4.2f}".format(
+                print("Agent: {:4.2f} Prior: {:4.2f} Target: {:4.2f} Reward: {:4.2f}".format(
                                                                             agent_likelihood_[i], 
                                                                             prior_likelihood_[i], 
                                                                             augmented_likelihood_[i], 
-                                                                            score_[i])
+                                                                            score_[i]))
 
             if self.config['PLOT_TRAINING']:
                 dynamic_plotter.update((step, score_), smiles) 
 
-        print "Saving model..."
+        print("Saving model...")
         local_saver = tf.train.Saver([var for var in tf.trainable_variables() if "g_" in var.name])
         local_saver.save(self.sess, self.save_folder_path + "/saved_model/model.ckpt")
 
@@ -460,25 +460,24 @@ if __name__ == "__main__":
               'NUM_EPOCHS' : 5,
               'BATCH_SIZE': 128,
               'MAX_LENGTH' : 140,
-              'MODEL_CHECKPOINT_PATH' : 'saved_models/reduced_prior_celecoxib/saved_model/model.ckpt',
+              'MODEL_CHECKPOINT_PATH' : 'saved_models/canonical_prior/saved_model/model.ckpt',
               'MOL_DATA_PATH' : 'data/prior_trainingset_MolData',
               'VOCABULARY_PATH' : 'data/prior_trainingset_Voc',
               'SAVE_FOLDER_PATH' : 'saved_runs/' + 'run_' + time.strftime(
                                      "%Y-%m-%d-%H_%M_%S", time.localtime()),
-              'SIGMA' : 15,
-              'AGENT_OBJECTIVE' : 'tanimoto', #"no_sulfur", "activity_model", "tanimoto"
+              'SIGMA' : 12,
+              'AGENT_OBJECTIVE' : 'tanimoto', #"no_sulphur", "activity_model", "tanimoto"
               'AGENT_OBJECTIVE_KWARGS' : {"k" : 0.7},
-              'PLOT_TRAINING' : True,
+              'PLOT_TRAINING' : False,
               }
 
-    
-    print 'REINVENT started running...'
-    with tf.Session(config=config) as sess:
+    print('REINVENT started running...')
+    with tf.Session() as sess:
         tf.set_random_seed(8)
         random.seed(8)
         model = REINVENT(sess, model_config)
         #model.pretrain_rnn()
-        #model.prior_likelihood("CC(C)(C)OC(=O)N1CC(C1)n2cc(cn2)c3cc(nc4c3C(=O)NC4)N5CCC(C5)N")
+        #model.prior_likelihood("CS(=O)(=O)CCCn1cc(cn1)c2nc(N3CC[C@@H]([NH3+])C3)c(F)c4CNC(=O)c24")
         #model.sample(10, savepath="gen_mols_before")
         model.train_agent()
-        model.sample(10, savepath="gen_mols_after")
+        #model.sample(10, savepath="gen_mols_after")

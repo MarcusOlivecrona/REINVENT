@@ -2,6 +2,7 @@ import matplotlib
 from matplotlib import pyplot as plt
 from rdkit import Chem
 from rdkit.Chem import Draw
+import numpy as np
 
 class DynamicPlot(object):
     def __init__(self, n_steps):
@@ -25,27 +26,36 @@ class DynamicPlot(object):
         self.updated = False
 
     def update(self, data, smiles):
+        """data is in the form of (step, [scores]) 
+           and smiles is a list with the same length
+           as [scores]"""
 
-        self.scores[0].append(data[0])
-        self.scores[1].append(data[1])
+        x, y = data[0], np.mean(data[1])
+        self.scores[0].append(x)
+        self.scores[1].append(y)
 
         if not self.updated:
             self.data = self.score_ax.plot(self.scores)[0]
             self.updated = True
 
         self.data.set_data(self.scores)
-        self.fig.canvas.draw()
 
         mols = []
-        for smile in smiles:
+        scores = []
+        for idx, smile in enumerate(smiles):
             if len(mols)==8:
                 break
             mol = Chem.MolFromSmiles(smile) 
             if mol is not None and "." not in smile:
                 mols.append(mol)
+                scores.append(str(round(data[1][idx], 2)))
 
-        mol_img = Draw.MolsToGridImage(mols, subImgSize=(400, 400), molsPerRow=4)
+        mol_img = Draw.MolsToGridImage(mols, subImgSize=(400, 400),
+                                       molsPerRow=4, legends=scores)
         self.mol_ax.images = []
         self.mol_ax.imshow(mol_img, interpolation="bicubic")
+
+        self.fig.canvas.draw()
+
         
 
