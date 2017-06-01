@@ -9,10 +9,9 @@ from rdkit.Chem import AllChem
 import pickle
 rdBase.DisableLog('rdApp.error')
 
-"""Scoring functions should be a function that take as input an array of SMILES and return an array of 
-   floats between -1 and 1. Alternatively use a class where some tasks that are shared for every call 
-   can be reallocated to the __init__, and has a __call__ method which works as the function described
-   above."""
+"""Scoring function should be a class where some tasks that are shared for every call 
+   can be reallocated to the __init__, and has a __call__ method which takes a list of 
+   smiles as an argument and returns a matching np.array of floats."""
 
 class no_sulphur(object):
     def __init__(self, **kwargs):
