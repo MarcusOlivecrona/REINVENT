@@ -24,11 +24,3 @@ To use with a custom SMILES file:
 
 The datasets and pretrained Priors used in the paper can be found under "Releases > 'saved_models.tar.gz'"
 
-## To Do
-
-* Make a package
-* Add argparser to facilitate usage
-
-Any further comments/suggestions/criticism/questions are welcome! 
-
-For contact outside of GitHub: m.olivecrona@gmail.com
