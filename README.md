@@ -1,14 +1,12 @@
 
 # REINVENT
-Molecular De Novo design using Recurrent Neural Networks and Reinforcement Learning
-=============
+## Molecular De Novo design using Recurrent Neural Networks and Reinforcement Learning
 
 Searching chemical space as described in:
 
 [Molecular De Novo Design through Deep Reinforcement Learning](https://arxiv.org/abs/1704.07555)
 
 ## Notes
------------
 The current version is a PyTorch implementation that differs in several ways from the original implementation described in the paper. This version works better in most situations and is better documented, but for the purpose of reproducing results from the paper refer to [Release v1.0.1](https://github.com/MarcusOlivecrona/REINVENT/releases/tag/v1.0.1)
 
 Differences from implmentation in the paper:
@@ -20,7 +18,6 @@ Differences from implmentation in the paper:
 * These changes makes the algorithm more robust towards local minima, means much higher values of sigma can be used if needed.
 
 ## Requirements
------------------
 
 This package requires:
 * Python 3.6
@@ -30,22 +27,21 @@ This package requires:
 * tqdm (for training Prior)
 
 ## Usage
----------
 
 To train a Prior starting with a SMILES file called mols.smi:
 
-* ./data_structs.py mols.smi   - Will generate data/mols_filtered.smi and data/Voc 
+* First filter the SMILES and construct a vocabulary from the remaining sequences. `./data_structs.py mols.smi`   - Will generate data/mols_filtered.smi and data/Voc. A filtered file containing around 1.1 million SMILES and the corresponding Voc is contained in "data".
 
-* ./train_prior.py
+* Then use `./train_prior.py` to train the Prior. A pretrained Prior is included.
 
-To train an Agent, use the main.py script. For example:
+To train an Agent using our Prior, use the main.py script. For example:
 
-* ./main.py --scoring-function activity_model --num_steps 1000
+* `./main.py --scoring-function activity_model --num_steps 1000`
 
-Training can be visualized using the Vizard bokeh app. The vizard_logger.py can be used to log information such as structures generated, average score, and network weights.
+Training can be visualized using the Vizard bokeh app. The vizard_logger.py is used to log information (by default to data/logs) such as structures generated, average score, and network weights.
 
-* cd Vizard
-* ./run.sh ../../data/logs
+* `cd Vizard`
+* `./run.sh ../../data/logs`
 * Open the browser at http://localhost:5006/Vizard
 
 
