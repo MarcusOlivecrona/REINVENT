@@ -93,9 +93,11 @@ layout = layout([[img_fig, score_fig], bar_plots, hist_plots], sizing_mode="fixe
 curdoc().add_root(layout)
 
 def update():
+    score = np.load(os.path.join(path, "Scores.npy"))
     with open(os.path.join(path, "SMILES"), "r") as f:
         mols = []
         scores = []
+        score = np.load()
         for line in f:
                 line = line.split()
                 mol = Chem.MolFromSmiles(line[0])
