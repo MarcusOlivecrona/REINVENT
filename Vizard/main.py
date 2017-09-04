@@ -97,7 +97,6 @@ def update():
     with open(os.path.join(path, "SMILES"), "r") as f:
         mols = []
         scores = []
-        score = np.load()
         for line in f:
                 line = line.split()
                 mol = Chem.MolFromSmiles(line[0])
