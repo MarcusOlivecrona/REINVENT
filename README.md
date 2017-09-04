@@ -6,6 +6,9 @@ Searching chemical space as described in:
 
 [Molecular De Novo Design through Deep Reinforcement Learning](https://arxiv.org/abs/1704.07555)
 
+![Video demonstrating an Agent trained to generate analogues to Celecoxib](https://github.com/MarcusOlivecrona/REINVENT/blob/master/images/celecoxib_analogues.gif "Training an Agent to generate analogues of Celecoxib")
+
+
 ## Notes
 The current version is a PyTorch implementation that differs in several ways from the original implementation described in the paper. This version works better in most situations and is better documented, but for the purpose of reproducing results from the paper refer to [Release v1.0.1](https://github.com/MarcusOlivecrona/REINVENT/releases/tag/v1.0.1)
 
