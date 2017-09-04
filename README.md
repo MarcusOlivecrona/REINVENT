@@ -41,7 +41,7 @@ To train an Agent using our Prior, use the main.py script. For example:
 Training can be visualized using the Vizard bokeh app. The vizard_logger.py is used to log information (by default to data/logs) such as structures generated, average score, and network weights.
 
 * `cd Vizard`
-* `./run.sh ../../data/logs`
+* `./run.sh ../data/logs`
 * Open the browser at http://localhost:5006/Vizard
 
 
