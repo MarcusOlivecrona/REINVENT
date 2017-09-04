@@ -1,0 +1,61 @@
+html {
+    background-color: #2F2F2F;
+    display: table;
+    margin: auto;
+}
+
+body {
+    display: table-cell;
+    vertical-align: middle;
+    color: #fff;
+}
+
+.img_outside {
+    position: relative;
+}
+
+.img_inside {
+    background-color: #EDEDED;
+    border: 7px solid #656565;
+    position:absolute;
+    left:50% ;
+    margin-left: -375px;
+    top:50% ;
+    margin-top: -250px;
+}
+
+.score_fig{
+    position: absolute;
+    top: 10px;
+}
+
+h1 {
+    margin: 0.5em 0 0.5em 0;
+    color: #fff;
+    font-family: 'Julius Sans One', sans-serif;
+    font-size: 3em;
+    text-transform: uppercase;
+    text-align: center;
+}
+
+h2 {
+    margin: 0 0 0 0;
+    color: #fff;
+    font-size: 20pt;
+    text-align: center;
+}
+
+a:link {
+    font-weight: bold;
+    text-decoration: none;
+    color: #0d8ba1;
+}
+a:visited {
+    font-weight: bold;
+    text-decoration: none;
+    color: #1a5952;
+}
+a:hover, a:focus, a:active {
+    text-decoration: underline;
+    color: #9685BA;
+}

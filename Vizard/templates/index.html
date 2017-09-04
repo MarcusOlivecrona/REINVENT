@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        {{ bokeh_css }}
+        {{ bokeh_js }}
+        <style>
+             {% include 'styles.css' %}
+        </style>
+        <meta charset="utf-8">
+        <title>MolExplorer</title>
+    </head>
+    <body>
+    <div>
+        <h1>Vizard</h1>
+        {{ plot_div|indent(8) }}
+    </div>
+        {{ plot_script|indent(8) }}
+    </body>
+</html>
