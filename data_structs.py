@@ -71,8 +71,22 @@ class Vocabulary(object):
             chars = f.read().split()
         self.add_characters(chars)
 
+    def __len__(self):
+        return len(self.chars)
+
+    def __str__(self):
+        return "Vocabulary containing {} tokens: {}".format(len(self), self.chars)
+
 class MolData(Dataset):
-    """Custom PyTorch Dataset that takes a file containing \n separated SMILES"""
+    """Custom PyTorch Dataset that takes a file containing SMILES.
+
+        Args:
+                fname : path to a file containing \n separated SMILES.
+                voc   : a Vocabulary instance
+
+        Returns:
+                A custom PyTorch dataset for training the Prior.
+    """
     def __init__(self, fname, voc):
         self.voc = voc
         self.smiles = []
@@ -88,6 +102,9 @@ class MolData(Dataset):
 
     def __len__(self):
         return len(self.smiles)
+
+    def __str__(self):
+        return "Dataset containing {} structures.".format(len(self))
 
     @classmethod
     def collate_fn(cls, arr):
