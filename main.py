@@ -7,7 +7,7 @@ from train_agent import train_agent
 
 parser = argparse.ArgumentParser(description="Main script for running the model")
 parser.add_argument('--scoring-function', action='store', dest='scoring_function',
-                    choices=['activity_model', 'pharmacophoric', 'tanimoto', 'no_sulphur'],
+                    choices=['activity_model', 'tanimoto', 'no_sulphur'],
                     default='tanimoto',
                     help='What type of scoring function to use.')
 parser.add_argument('--scoring-function-kwargs', action='store', dest='scoring_function_kwargs',
@@ -29,6 +29,10 @@ parser.add_argument('--sigma', action='store', dest='sigma', type=int,
 parser.add_argument('--experience', action='store', dest='experience_replay', type=int,
                     default=0, help='Number of experience sequences to sample each step. '\
                     '0 means no experience replay.')
+parser.add_argument('--num-processes', action='store', dest='num_processes',
+                    type=int, default=0,
+                    help='Number of processes used to run the scoring function. "0" means ' \
+                    'that the scoring function will be run in the main process.')
 parser.add_argument('--prior', action='store', dest='restore_prior_from',
                     default='data/Prior.ckpt',
                     help='Path to an RNN checkpoint file to use as a Prior')

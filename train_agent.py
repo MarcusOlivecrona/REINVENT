@@ -19,7 +19,8 @@ def train_agent(restore_prior_from='data/Prior.ckpt',
                 scoring_function_kwargs=None,
                 save_dir=None, learning_rate=0.0005,
                 batch_size=64, n_steps=3000,
-                sigma=60, experience_replay=0):
+                num_processes=0, sigma=60,
+                experience_replay=0):
 
     voc = Vocabulary(init_from_file="data/Voc")
 
@@ -47,7 +48,8 @@ def train_agent(restore_prior_from='data/Prior.ckpt',
     optimizer = torch.optim.Adam(Agent.rnn.parameters(), lr=0.0005)
 
     # Scoring_function
-    scoring_function = get_scoring_function(name=scoring_function, **scoring_function_kwargs)
+    scoring_function = get_scoring_function(scoring_function=scoring_function, num_processes=num_processes,
+                                            **scoring_function_kwargs)
 
     # For policy based RL, we normally train on-policy and correct for the fact that more likely actions
     # occur more often (which means the agent can get biased towards them). Using experience replay is
