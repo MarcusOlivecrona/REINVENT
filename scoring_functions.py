@@ -130,6 +130,9 @@ class Multiprocessing():
         scores = [0 for _ in range(len(smiles))]
         smiles_copy = [smile for smile in smiles]
         while smiles_copy:
+            alive_procs = self.alive_workers()
+            if not alive_procs:
+               raise RunTimeError("All subprocesses are dead, exiting.")
             # As long as we still have SMILES to score
             used_threads = []
             # Threads name corresponds to the index of the worker, so here
@@ -142,7 +145,7 @@ class Multiprocessing():
                     used_threads.append(n)
                 except ValueError:
                     continue
-            free_threads = [i for i in self.alive_workers() if i not in used_threads]
+            free_threads = [i for i in alive_procs if i not in used_threads]
             for n in free_threads:
                 if smiles_copy:
                     # Send SMILES and what index in the result list the score should be inserted at
