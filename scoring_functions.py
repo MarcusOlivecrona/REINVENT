@@ -182,7 +182,7 @@ def get_scoring_function(scoring_function, num_processes=None, **kwargs):
 
     for k, v in kwargs.items():
         if k in scoring_function_class.kwargs:
-            scoring_function_class.k = v
+            setattr(scoring_function_class, k, v)
 
     if num_processes == 0:
         return Singleprocessing(scoring_function=scoring_function_class)
