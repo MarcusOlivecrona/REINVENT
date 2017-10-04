@@ -96,7 +96,10 @@ class Worker():
        that is listening for input SMILES and inserts the score into the given
        index in the given list."""
     def __init__(self, scoring_function=None):
-        self.score_re = re.compile('1.0+|[0]\.[0-9]+')
+        """The score_re is a regular expression that extracts the score from the
+           stdout of the subprocess. This means only scoring functions with range
+           0.0-1.0 will work, for other ranges this re has to be modified."""
+        self.score_re = re.compile('1\.0+|[0]\.[0-9]+')
         self.string_re = re.compile('[A-Za-z]+')
 
         self.proc = pexpect.spawn('./multiprocess.py ' + scoring_function,
