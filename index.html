@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>Sampling</title>
+<meta name="author" content="(CognitiveChem)"/>
+<style type="text/css">
+.underline { text-decoration: underline; }
+</style>
+<link rel="stylesheet" href="Reveal.js/css/reveal.css"/>
+
+<link rel="stylesheet" href="Reveal.js/css/theme/org.css" id="theme"/>
+
+
+<!-- If the query includes 'print-pdf', include the PDF print sheet -->
+<script>
+    if( window.location.search.match( /print-pdf/gi ) ) {
+        var link = document.createElement( 'link' );
+        link.rel = 'stylesheet';
+        link.type = 'text/css';
+        link.href = 'Reveal.js/css/print/pdf.css';
+        document.getElementsByTagName( 'head' )[0].appendChild( link );
+    }
+</script>
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+</head>
+<body>
+<div class="reveal">
+<div class="slides">
+<section id="sec-title-slide"><h1>Sampling</h1><h3>CognitiveChem</h3>
+</section>
+
+<section>
+<section id="slide-orgc129960">
+<h2 id="orgc129960">Finding the right molecule</h2>
+</section>
+<section >
+<ul>
+<li>Chemical space is incredibly big:  <b>~10<sup>60</sup></b></li>
+<li class="fragment appear">It is implossible to evaluate this many structures</li>
+<li class="fragment appear">Therefor we need a <b><b>smart</b></b> way to search the space</li>
+
+</ul>
+
+</section>
+<section id="slide-org56651d8">
+<h3 id="org56651d8">Learning from data</h3>
+</section>
+<section >
+<p>
+We start by creating a machine learning model that is trained on millions of structures designed by expert chemists. 
+</p>
+</section>
+<section >
+<p>
+This model generates all types of structures.
+</p>
+
+</section>
+<section id="slide-org16abc00">
+<h3 id="org16abc00">Reinforcement learning</h3>
+</section>
+<section >
+<p>
+In order to find molecules with specific properties, we use reinforcement learning.
+</p>
+</section>
+<section >
+<p>
+This is the same technique that was used in AlphaGo to beat the best human GO players.
+</p>
+</section>
+<section >
+<p>
+The idea is simple: the model gets rewarded when it does something good (generates an interesting molecule!).
+</p>
+</section>
+<section >
+<p>
+Over time it learns how to maximize the reward.
+</p>
+
+</section>
+</section>
+<section>
+<section id="slide-orgbcf9c7e">
+<h2 id="orgbcf9c7e">An Example</h2>
+</section>
+<section >
+<p>
+Lets see how it works through an example!
+</p>
+
+</section>
+<section id="slide-org50b96cc">
+<h3 id="org50b96cc">Chemical Analogues</h3>
+</section>
+<section >
+<p>
+Our objective is to generate analogues to the drug Celecoxib.
+</p>
+<img src="assets/Celecoxib.svg">
+</section>
+<section >
+<p>
+We achieve this by using Tanimoto similarity of molecular fingerprints as our objective.
+</p>
+</section>
+<section >
+<p>
+\(S(A) =  \frac{\min \{ J_{i, j}, k \}}{k}\)
+</p>
+</section>
+<section >
+<p>
+and this is the result&#x2026;
+</p>
+</section>
+<section >
+<img alt="Training progress" src="assets/tanimoto.png">
+</section>
+<section id="slide-orge44b3a1">
+<h3 id="orge44b3a1">Generated Molecules</h3>
+<iframe height=700px width=600px src="assets/gen_mols.html"></iframe>
+</section>
+</section>
+</div>
+</div>
+<script src="Reveal.js/lib/js/head.min.js"></script>
+<script src="Reveal.js/js/reveal.js"></script>
+
+<script>
+// Full list of configuration options available here:
+// https://github.com/hakimel/reveal.js#configuration
+Reveal.initialize({
+
+controls: true,
+progress: true,
+history: false,
+center: true,
+slideNumber: 'c',
+rollingLinks: false,
+keyboard: true,
+overview: true,
+
+theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
+transition: Reveal.getQueryHash().transition || 'default', // default/cube/page/concave/zoom/linear/fade/none
+transitionSpeed: 'default',
+multiplex: {
+    secret: '', // null if client
+    id: '', // id, obtained from socket.io server
+    url: '' // Location of socket.io server
+},
+
+// Optional libraries used to extend on reveal.js
+dependencies: [
+ { src: 'Reveal.js/lib/js/classList.js', condition: function() { return !document.body.classList; } },
+ { src: 'Reveal.js/plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+ { src: 'Reveal.js/plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+ { src: 'Reveal.js/plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
+ { src: 'Reveal.js/plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } }]
+});
+</script>
+</body>
+</html>
