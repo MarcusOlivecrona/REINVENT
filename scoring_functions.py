@@ -99,17 +99,17 @@ class Worker():
         """The score_re is a regular expression that extracts the score from the
            stdout of the subprocess. This means only scoring functions with range
            0.0-1.0 will work, for other ranges this re has to be modified."""
-        self.score_re = re.compile('1\.0+|[0]\.[0-9]+')
-        self.string_re = re.compile('[A-Za-z]+')
 
         self.proc = pexpect.spawn('./multiprocess.py ' + scoring_function,
                                   encoding='utf-8')
 
+        print(self.is_alive())
+
     def __call__(self, smile, index, result_list):
         self.proc.sendline(smile)
-        output = self.proc.expect([self.score_re, 'None', pexpect.TIMEOUT])
+        output = self.proc.expect([re.escape(smile) + " 1\.0+|[0]\.[0-9]+", 'None', pexpect.TIMEOUT])
         if output is 0:
-            score = self.proc.after
+            score = float(self.proc.after.lstrip(smile + " "))
         elif output in [1, 2]:
             score = 0.0
         result_list[index] = score
@@ -134,7 +134,7 @@ class Multiprocessing():
         while smiles_copy:
             alive_procs = self.alive_workers()
             if not alive_procs:
-               raise RunTimeError("All subprocesses are dead, exiting.")
+               raise RuntimeError("All subprocesses are dead, exiting.")
             # As long as we still have SMILES to score
             used_threads = []
             # Threads name corresponds to the index of the worker, so here
