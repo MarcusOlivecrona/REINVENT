@@ -106,7 +106,6 @@ class Worker():
                                   encoding='utf-8')
 
     def __call__(self, smile, index, result_list):
-        string = smile
         self.proc.sendline(smile)
         output = self.proc.expect([self.score_re, 'None', pexpect.TIMEOUT])
         if output is 0:
