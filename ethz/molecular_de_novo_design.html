@@ -7,9 +7,9 @@
 <style type="text/css">
 .underline { text-decoration: underline; }
 </style>
-<link rel="stylesheet" href="file:///home/marcus/lib/Reveal.js/css/reveal.css"/>
+<link rel="stylesheet" href="../Reveal.js/css/reveal.css"/>
 
-<link rel="stylesheet" href="file:///home/marcus/lib/Reveal.js/css/theme/org.css" id="theme"/>
+<link rel="stylesheet" href="../Reveal.js/css/theme/org.css" id="theme"/>
 
 
 <!-- If the query includes 'print-pdf', include the PDF print sheet -->
@@ -18,7 +18,7 @@
         var link = document.createElement( 'link' );
         link.rel = 'stylesheet';
         link.type = 'text/css';
-        link.href = 'file:///home/marcus/lib/Reveal.js/css/print/pdf.css';
+        link.href = '../Reveal.js/css/print/pdf.css';
         document.getElementsByTagName( 'head' )[0].appendChild( link );
     }
 </script>
@@ -35,7 +35,7 @@
 <h2 id="org967462b">De Novo Design</h2>
 </section>
 <section >
-<img src="/home/marcus/org/ethz/assets/moldesign.png">
+<img src="assets/moldesign.png">
 </section>
 <section >
 <ul>
@@ -55,13 +55,13 @@
 <p>
 We train a recurrent neural network as a maximum likelihood model over a set of SMILES
 </p>
-<img width=1000px src="/home/marcus/org/ethz/assets/smiles.png">
+<img width=1000px src="assets/smiles.png">
 </section>
 <section >
 <p>
 Then use reinforcement learning to optimize the generative model given a scoring function:
 </p>
-<img width=1000px src="/home/marcus/org/ethz/assets/model.png">
+<img width=1000px src="assets/model.png">
 <p>
 \(S: \mathrm{Molecular\ Structure} \mapsto \mathcal{R}\)
 </p>
@@ -76,10 +76,10 @@ Then use reinforcement learning to optimize the generative model given a scoring
 <p>
 Learns to generate actives in less than 100 steps:
 </p>
-<img width=1000px src="/home/marcus/org/ethz/assets/training_curve.png">
+<img width=1000px src="assets/training_curve.png">
 </section>
 <section >
-<iframe height=600px width=800px src="file:///home/marcus/org/ethz/assets/example.html"></iframe>
+<iframe height=600px width=800px src="assets/example.html"></iframe>
 
 </section>
 </section>
@@ -125,8 +125,8 @@ Ola, Hongming, and Thomas
 </section>
 </div>
 </div>
-<script src="file:///home/marcus/lib/Reveal.js/lib/js/head.min.js"></script>
-<script src="file:///home/marcus/lib/Reveal.js/js/reveal.js"></script>
+<script src="../Reveal.js/lib/js/head.min.js"></script>
+<script src="../Reveal.js/js/reveal.js"></script>
 
 <script>
 // Full list of configuration options available here:
@@ -153,11 +153,11 @@ multiplex: {
 
 // Optional libraries used to extend on reveal.js
 dependencies: [
- { src: 'file:///home/marcus/lib/Reveal.js/lib/js/classList.js', condition: function() { return !document.body.classList; } },
- { src: 'file:///home/marcus/lib/Reveal.js/plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
- { src: 'file:///home/marcus/lib/Reveal.js/plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
- { src: 'file:///home/marcus/lib/Reveal.js/plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
- { src: 'file:///home/marcus/lib/Reveal.js/plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } }]
+ { src: '../Reveal.js/lib/js/classList.js', condition: function() { return !document.body.classList; } },
+ { src: '../Reveal.js/plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+ { src: '../Reveal.js/plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+ { src: '../Reveal.js/plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
+ { src: '../Reveal.js/plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } }]
 });
 </script>
 </body>
