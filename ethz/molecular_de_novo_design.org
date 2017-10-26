@@ -1,0 +1,47 @@
+#+REVEAL_THEME: org
+#+TITLE: Research
+#+AUTHOR: Marcus Olivecrona
+#+OPTIONS: toc:nil num:nil
+
+* De Novo Design
+#+REVEAL: split
+#+REVEAL_HTML: <img src="/home/marcus/org/ethz/assets/moldesign.png">
+#+REVEAL: split
+#+ATTR_REVEAL: :frag (none appear)
+   * Chemical space is incredibly big:  *~10^60* 
+   * We need a smart way to search the space
+   * We also need a way to generate molecular structures
+ 
+* A machine learning approach
+#+REVEAL: split
+We train a recurrent neural network as a maximum likelihood model over a set of SMILES
+#+REVEAL_HTML: <img width=1000px src="/home/marcus/org/ethz/assets/smiles.png">
+#+REVEAL: split
+Then use reinforcement learning to optimize the generative model given a scoring function:
+#+REVEAL_HTML: <img width=1000px src="/home/marcus/org/ethz/assets/model.png">
+   $S: \mathrm{Molecular\ Structure} \mapsto \mathcal{R}$
+
+* Learning to generate DRD2 actives
+#+REVEAL: split
+Learns to generate actives in less than 100 steps:
+#+REVEAL_HTML: <img width=1000px src="/home/marcus/org/ethz/assets/training_curve.png">
+#+REVEAL: split
+#+REVEAL_HTML: <iframe height=600px width=800px src="file:///home/marcus/org/ethz/assets/example.html"></iframe>
+
+* Methods
+   * Low-level neural networks
+   * Reinforcement learning 
+   * Standard cheminformatics:
+     - Clustering
+     - Similarity
+     - QSAR models
+     - Structure based design
+
+* Contribution
+   * Concept
+   * Implementation
+   * Experiments
+   * Manuscript
+
+* Acknowledgements
+  Ola, Hongming, and Thomas

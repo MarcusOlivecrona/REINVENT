@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>Research</title>
+<meta name="author" content="(Marcus Olivecrona)"/>
+<style type="text/css">
+.underline { text-decoration: underline; }
+</style>
+<link rel="stylesheet" href="file:///home/marcus/lib/Reveal.js/css/reveal.css"/>
+
+<link rel="stylesheet" href="file:///home/marcus/lib/Reveal.js/css/theme/org.css" id="theme"/>
+
+
+<!-- If the query includes 'print-pdf', include the PDF print sheet -->
+<script>
+    if( window.location.search.match( /print-pdf/gi ) ) {
+        var link = document.createElement( 'link' );
+        link.rel = 'stylesheet';
+        link.type = 'text/css';
+        link.href = 'file:///home/marcus/lib/Reveal.js/css/print/pdf.css';
+        document.getElementsByTagName( 'head' )[0].appendChild( link );
+    }
+</script>
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+</head>
+<body>
+<div class="reveal">
+<div class="slides">
+<section id="sec-title-slide"><h1>Research</h1><h3>Marcus Olivecrona</h3>
+</section>
+
+<section>
+<section id="slide-org967462b">
+<h2 id="org967462b">De Novo Design</h2>
+</section>
+<section >
+<img src="/home/marcus/org/ethz/assets/moldesign.png">
+</section>
+<section >
+<ul>
+<li>Chemical space is incredibly big:  <b>~10<sup>60</sup></b></li>
+<li class="fragment appear">We need a smart way to search the space</li>
+<li class="fragment appear">We also need a way to generate molecular structures</li>
+
+</ul>
+
+</section>
+</section>
+<section>
+<section id="slide-orgb2aa4e9">
+<h2 id="orgb2aa4e9">A machine learning approach</h2>
+</section>
+<section >
+<p>
+We train a recurrent neural network as a maximum likelihood model over a set of SMILES
+</p>
+<img width=1000px src="/home/marcus/org/ethz/assets/smiles.png">
+</section>
+<section >
+<p>
+Then use reinforcement learning to optimize the generative model given a scoring function:
+</p>
+<img width=1000px src="/home/marcus/org/ethz/assets/model.png">
+<p>
+\(S: \mathrm{Molecular\ Structure} \mapsto \mathcal{R}\)
+</p>
+
+</section>
+</section>
+<section>
+<section id="slide-org4066ce1">
+<h2 id="org4066ce1">Learning to generate DRD2 actives</h2>
+</section>
+<section >
+<p>
+Learns to generate actives in less than 100 steps:
+</p>
+<img width=1000px src="/home/marcus/org/ethz/assets/training_curve.png">
+</section>
+<section >
+<iframe height=600px width=800px src="file:///home/marcus/org/ethz/assets/example.html"></iframe>
+
+</section>
+</section>
+<section>
+<section id="slide-orgd9eadc1">
+<h2 id="orgd9eadc1">Methods</h2>
+<ul>
+<li>Low-level neural networks</li>
+<li>Reinforcement learning</li>
+<li>Standard cheminformatics:
+<ul>
+<li>Clustering</li>
+<li>Similarity</li>
+<li>QSAR models</li>
+<li>Structure based design</li>
+
+</ul></li>
+
+</ul>
+
+</section>
+</section>
+<section>
+<section id="slide-orgb96cc31">
+<h2 id="orgb96cc31">Contribution</h2>
+<ul>
+<li>Concept</li>
+<li>Implementation</li>
+<li>Experiments</li>
+<li>Manuscript</li>
+
+</ul>
+
+</section>
+</section>
+<section>
+<section id="slide-orgccdbd06">
+<h2 id="orgccdbd06">Acknowledgements</h2>
+<p>
+Ola, Hongming, and Thomas
+</p>
+</section>
+</section>
+</div>
+</div>
+<script src="file:///home/marcus/lib/Reveal.js/lib/js/head.min.js"></script>
+<script src="file:///home/marcus/lib/Reveal.js/js/reveal.js"></script>
+
+<script>
+// Full list of configuration options available here:
+// https://github.com/hakimel/reveal.js#configuration
+Reveal.initialize({
+
+controls: true,
+progress: true,
+history: false,
+center: true,
+slideNumber: 'c',
+rollingLinks: false,
+keyboard: true,
+overview: true,
+
+theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
+transition: Reveal.getQueryHash().transition || 'default', // default/cube/page/concave/zoom/linear/fade/none
+transitionSpeed: 'default',
+multiplex: {
+    secret: '', // null if client
+    id: '', // id, obtained from socket.io server
+    url: '' // Location of socket.io server
+},
+
+// Optional libraries used to extend on reveal.js
+dependencies: [
+ { src: 'file:///home/marcus/lib/Reveal.js/lib/js/classList.js', condition: function() { return !document.body.classList; } },
+ { src: 'file:///home/marcus/lib/Reveal.js/plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+ { src: 'file:///home/marcus/lib/Reveal.js/plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+ { src: 'file:///home/marcus/lib/Reveal.js/plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
+ { src: 'file:///home/marcus/lib/Reveal.js/plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } }]
+});
+</script>
+</body>
+</html>
