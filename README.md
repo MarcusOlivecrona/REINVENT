@@ -39,7 +39,7 @@ To train a Prior starting with a SMILES file called mols.smi:
 
 To train an Agent using our Prior, use the main.py script. For example:
 
-* `./main.py --scoring-function activity_model --num_steps 1000`
+* `./main.py --scoring-function activity_model --num-steps 1000`
 
 Training can be visualized using the Vizard bokeh app. The vizard_logger.py is used to log information (by default to data/logs) such as structures generated, average score, and network weights.
 
