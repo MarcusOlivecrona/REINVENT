@@ -98,13 +98,14 @@ class RNN():
             logits, h = self.rnn(x, h)
             prob = F.softmax(logits)
             log_prob = F.log_softmax(logits)
-            x = torch.multinomial(prob).view(-1)
+            x = torch.multinomial(prob, num_samples=1).view(-1)
             sequences.append(x.view(-1, 1))
             log_probs +=  NLLLoss(log_prob, x)
             entropy += -torch.sum((log_prob * prob), 1)
 
             x = Variable(x.data)
-            EOS_sampled = (x == self.voc.vocab['EOS']).data
+            # EOS_sampled = (x == self.voc.vocab['EOS']).data
+            EOS_sampled = (x == self.voc.vocab['EOS']).byte()
             finished = torch.ge(finished + EOS_sampled, 1)
             if torch.prod(finished) == 1: break
 
