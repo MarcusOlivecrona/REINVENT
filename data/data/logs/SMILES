@@ -1,0 +1,12 @@
+COC(=O)CCC(=O)C(C)C1(O)CC(O)CC(O)C1C	1.0
+O=C(O)COc1c(C(=O)O)c(OCC2OC(OCCCO)C(O)C(O)C2O)cc(O)c1OC1OC(CO)C(O)C(O)C1O	1.0
+CC(C)c1ccc(OCCCn2cc(CCC3(C)OC(=O)NC3=O)c(-c3ccccc3)n2)cc1	1.0
+CNCC(O)COc1c(C)cc2cc(C)c(O)c(CC=C(C)CCC=C(C)C)c2c1C	1.0
+COC(=O)c1ccc(NC(=O)NNC(=O)c2cncc(OC)c2)cc1	1.0
+O=C1NC(O)C(O)C(O)C1O	1.0
+COc1cc(OC)c2c(OC(C)=O)cc(-c3ccc(C(=O)N4CCN(C(=O)CN)CC4)c(C)c3)nc2c1OC	1.0
+C=CCC1OCc2cc3c(cc2C1Cc1c(OC)c(OC)cc2c1OC(C)=O)OC(C)C(C)C2CC3	1.0
+COc1cc(OC)c(C=CC(=O)OCC(OC(=O)C=Cc2ccc(O)c(O)c2)C(=O)OC)c(OC)c1	1.0
+CC(C)C(C(=O)OC(C)(C)C)N1C(=O)C(NC(=O)C(N)c2ccccc2)c2ccccc2)C1=O	0.0
+COc1cc2c(c(OC)c1OC)-c1c(O)ccc(O)c1C(O)C2	1.0
+CCOc1ccccc1NC(=O)c1ccc(N2CC(CNC(C)=O)OC2=O)cc1F	1.0
