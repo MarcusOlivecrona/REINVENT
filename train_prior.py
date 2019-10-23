@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 
-import torch
-from torch.utils.data import DataLoader
 import pickle
 from rdkit import Chem
 from rdkit import rdBase
 from tqdm import tqdm
+import torch
+from torch.utils.data import DataLoader
 
 from data_structs import MolData, Vocabulary
 from model import RNN
@@ -22,6 +22,7 @@ def pretrain(restore_from=None):
     moldata = MolData("data/mols_filtered.smi", voc)
     data = DataLoader(moldata, batch_size=128, shuffle=True, drop_last=True,
                       collate_fn=MolData.collate_fn)
+
 
     Prior = RNN(voc)
 
@@ -53,7 +54,9 @@ def pretrain(restore_from=None):
             if step % 500 == 0 and step != 0:
                 decrease_learning_rate(optimizer, decrease_by=0.03)
                 tqdm.write("*" * 50)
-                tqdm.write("Epoch {:3d}   step {:3d}    loss: {:5.2f}\n".format(epoch, step, loss.data[0]))
+                #tqdm.write("Epoch {:3d}   step {:3d}    loss: {:5.2f}\n".format(epoch, step, loss.data[0]))
+                tqdm.write("Epoch {:3d}   step {:3d}    loss: {:5.2f}\n".format(epoch, step, loss.data))
+
                 seqs, likelihood, _ = Prior.sample(128)
                 valid = 0
                 for i, seq in enumerate(seqs.cpu().numpy()):
