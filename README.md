@@ -28,6 +28,7 @@ This package requires:
 * [RDkit](http://www.rdkit.org/docs/Install.html)
 * Scikit-Learn (for QSAR scoring function)
 * tqdm (for training Prior)
+* pexpect
 
 ## Usage
 
