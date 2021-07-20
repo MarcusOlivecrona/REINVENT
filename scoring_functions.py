@@ -38,8 +38,8 @@ class no_sulphur():
     def __call__(self, smile):
         mol = Chem.MolFromSmiles(smile)
         if mol:
-            has_sulphur = [16 not in [atom.GetAtomicNum() for atom in mol.GetAtoms()]]
-            return float(has_sulphur)
+            has_sulphur = any(atom.GetAtomicNum() == 16 for atom in mol.GetAtoms())
+            return float(not has_sulphur)
         return 0.0
 
 class tanimoto():
